@@ -3,10 +3,6 @@
 ## 🎯 Project Overview
 Task Manager web application built with Node.js, Express, and MongoDB Atlas for COMSATS University DevOps Course (CSC483).
 
-**Student**: Afnan Ajmal  
-**Instructor**: Qasim Malik  
-**Course**: CSC483 - DevOps  
-**Semester**: Spring 2025  
 
 ## 🚀 Application Features
 - ✅ Create, Read, Update, Delete (CRUD) tasks
