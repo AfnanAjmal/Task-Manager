@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Task Manager - COMSATS University</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+        }
+
+        .form-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .btn-delete:hover {
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .task-list {
+            margin-top: 30px;
+        }
+
+        .task-item {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .task-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .task-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .task-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #ffeaa7;
+            color: #d63031;
+        }
+
+        .status-in-progress {
+            background: #74b9ff;
+            color: #0984e3;
+        }
+
+        .status-completed {
+            background: #00b894;
+            color: #00cec9;
+        }
+
+        .priority-high {
+            border-left: 5px solid #e74c3c;
+        }
+
+        .priority-medium {
+            border-left: 5px solid #f39c12;
+        }
+
+        .priority-low {
+            border-left: 5px solid #27ae60;
+        }
+
+        .task-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .task-meta {
+            font-size: 0.9em;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        .no-tasks {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="app-title">DevOps Task Manager</h1>
+            <p>COMSATS University - Spring 2025 - CSC483 DevOps Assignment</p>
+            <p>Student: Afnan Ajmal | Instructor: Qasim Malik</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Statistics Section -->
+            <div class="stats" id="task-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-tasks">0</div>
+                    <div>Total Tasks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pending-tasks">0</div>
+                    <div>Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completed-tasks">0</div>
+                    <div>Completed</div>
+                </div>
+            </div>
+
+            <!-- Task Creation Form -->
+            <div class="form-section">
+                <h2>Create New Task</h2>
+                <form id="task-form">
+                    <div class="form-group">
+                        <label for="task-title">Task Title:</label>
+                        <input type="text" id="task-title" name="title" required placeholder="Enter task title...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="task-description">Description:</label>
+                        <textarea id="task-description" name="description" required placeholder="Enter task description..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="task-priority">Priority:</label>
+                        <select id="task-priority" name="priority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="task-status">Status:</label>
+                        <select id="task-status" name="status">
+                            <option value="pending" selected>Pending</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn" id="submit-task">Create Task</button>
+                    <button type="button" class="btn" id="clear-form">Clear Form</button>
+                </form>
+            </div>
+
+            <!-- Task Management Buttons -->
+            <div class="form-section">
+                <h2>Task Management</h2>
+                <button class="btn" id="load-tasks">Load All Tasks</button>
+                <button class="btn" id="filter-pending">Show Pending</button>
+                <button class="btn" id="filter-completed">Show Completed</button>
+                <button class="btn btn-delete" id="delete-all">Delete All Tasks</button>
+            </div>
+
+            <!-- Tasks List -->
+            <div class="task-list">
+                <h2>Tasks</h2>
+                <div id="tasks-container">
+                    <div class="loading">Loading tasks...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class TaskManager {
+            constructor() {
+                this.tasks = [];
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.loadTasks();
+            }
+
+            bindEvents() {
+                document.getElementById('task-form').addEventListener('submit', (e) => this.createTask(e));
+                document.getElementById('clear-form').addEventListener('click', () => this.clearForm());
+                document.getElementById('load-tasks').addEventListener('click', () => this.loadTasks());
+                document.getElementById('filter-pending').addEventListener('click', () => this.filterTasks('pending'));
+                document.getElementById('filter-completed').addEventListener('click', () => this.filterTasks('completed'));
+                document.getElementById('delete-all').addEventListener('click', () => this.deleteAllTasks());
+            }
+
+            async createTask(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                const taskData = Object.fromEntries(formData);
+
+                try {
+                    const response = await fetch('/api/tasks', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(taskData)
+                    });
+
+                    if (response.ok) {
+                        const task = await response.json();
+                        this.clearForm();
+                        this.loadTasks();
+                        alert('Task created successfully!');
+                    } else {
+                        const error = await response.json();
+                        alert('Error creating task: ' + error.error);
+                    }
+                } catch (error) {
+                    alert('Error creating task: ' + error.message);
+                }
+            }
+
+            async loadTasks() {
+                try {
+                    const response = await fetch('/api/tasks');
+                    this.tasks = await response.json();
+                    this.renderTasks(this.tasks);
+                    this.updateStats();
+                } catch (error) {
+                    document.getElementById('tasks-container').innerHTML = 
+                        '<div class="no-tasks">Error loading tasks: ' + error.message + '</div>';
+                }
+            }
+
+            renderTasks(tasks) {
+                const container = document.getElementById('tasks-container');
+                
+                if (tasks.length === 0) {
+                    container.innerHTML = '<div class="no-tasks">No tasks available</div>';
+                    return;
+                }
+
+                container.innerHTML = tasks.map(task => `
+                    <div class="task-item priority-${task.priority}" data-task-id="${task._id}">
+                        <div class="task-header">
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-status status-${task.status}">${task.status}</div>
+                        </div>
+                        <div class="task-description">${task.description}</div>
+                        <div class="task-meta">
+                            Priority: ${task.priority.toUpperCase()} | 
+                            Created: ${new Date(task.createdAt).toLocaleDateString()}
+                        </div>
+                        <button class="btn" onclick="taskManager.updateTaskStatus('${task._id}', 'completed')">
+                            Mark Complete
+                        </button>
+                        <button class="btn" onclick="taskManager.updateTaskStatus('${task._id}', 'in-progress')">
+                            In Progress
+                        </button>
+                        <button class="btn btn-delete" onclick="taskManager.deleteTask('${task._id}')">
+                            Delete
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            async updateTaskStatus(taskId, status) {
+                try {
+                    const response = await fetch(`/api/tasks/${taskId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ status })
+                    });
+
+                    if (response.ok) {
+                        this.loadTasks();
+                    } else {
+                        const error = await response.json();
+                        alert('Error updating task: ' + error.error);
+                    }
+                } catch (error) {
+                    alert('Error updating task: ' + error.message);
+                }
+            }
+
+            async deleteTask(taskId) {
+                if (confirm('Are you sure you want to delete this task?')) {
+                    try {
+                        const response = await fetch(`/api/tasks/${taskId}`, {
+                            method: 'DELETE'
+                        });
+
+                        if (response.ok) {
+                            this.loadTasks();
+                        } else {
+                            const error = await response.json();
+                            alert('Error deleting task: ' + error.error);
+                        }
+                    } catch (error) {
+                        alert('Error deleting task: ' + error.message);
+                    }
+                }
+            }
+
+            async deleteAllTasks() {
+                if (confirm('Are you sure you want to delete ALL tasks? This cannot be undone!')) {
+                    try {
+                        for (const task of this.tasks) {
+                            await fetch(`/api/tasks/${task._id}`, { method: 'DELETE' });
+                        }
+                        this.loadTasks();
+                    } catch (error) {
+                        alert('Error deleting tasks: ' + error.message);
+                    }
+                }
+            }
+
+            filterTasks(status) {
+                const filteredTasks = this.tasks.filter(task => task.status === status);
+                this.renderTasks(filteredTasks);
+            }
+
+            clearForm() {
+                document.getElementById('task-form').reset();
+            }
+
+            updateStats() {
+                const total = this.tasks.length;
+                const pending = this.tasks.filter(t => t.status === 'pending').length;
+                const completed = this.tasks.filter(t => t.status === 'completed').length;
+
+                document.getElementById('total-tasks').textContent = total;
+                document.getElementById('pending-tasks').textContent = pending;
+                document.getElementById('completed-tasks').textContent = completed;
+            }
+        }
+
+        // Initialize the application
+        const taskManager = new TaskManager();
+    </script>
+</body>
+</html> 

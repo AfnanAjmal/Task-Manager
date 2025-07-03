@@ -1,0 +1,33 @@
+# Docker Compose for DevOps Task Manager
+# COMSATS University - Spring 2025 - CSC483 DevOps Assignment
+# Student: Afnan Ajmal | Instructor: Qasim Malik
+
+version: '3.8'
+
+services:
+  # Web Application (using MongoDB Atlas - no local MongoDB needed)
+  app:
+    build: .
+    container_name: devops-task-manager
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+            - "MONGODB_URI=mongodb+srv://afnan:afnan@cluster0.jv1iq.mongodb.net/devops_tasks?retryWrites=true&w=majority&appName=Cluster0"
+    healthcheck:
+        test: ["CMD", "node", "-e", "const http = require('http'); http.get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => { process.exit(1); });"]
+        interval: 30s
+        timeout: 10s
+        retries: 3
+        start_period: 40s
+
+# No volumes needed - using MongoDB Atlas cloud database
+# No networks needed - single service deployment
+
+# Usage:
+# docker-compose up -d          # Start application
+# docker-compose down           # Stop application
+# docker-compose logs app       # View application logs
+# Note: Database is hosted on MongoDB Atlas (no local MongoDB needed) 
